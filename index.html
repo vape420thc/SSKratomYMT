@@ -3,573 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSKratom-YMT • ส.สามสี | เครื่องมือคำนวณครบวงจร</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>บ้านไร่ริมเขื่อน - ระบบจองโต๊ะ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        :root {
-            --primary: #3498db;
-            --secondary: #2ecc71;
-            --accent: #9b59b6;
-            --dark-bg: #121826;
-            --dark-card: #1e293b;
-            --dark-card-hover: #273449;
-            --dark-text: #e2e8f0;
-            --dark-text-secondary: #94a3b8;
-            --dark-border: #334155;
-            --dark-input: #0f172a;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --kratom-primary: #2e7d32;
-            --kratom-primary-dark: #1b5e20;
-            --kratom-green: #66bb6a;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: var(--dark-text);
-        }
-
-        .container { width: 100%; max-width: 750px; }
-        .calculator {
-            background: var(--dark-card);
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            padding: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--dark-border);
-            overflow: hidden;
-        }
-        .calculator:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        .header h1 {
-            color: var(--dark-text);
-            font-size: 28px;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        .header h1:after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            border-radius: 2px;
-        }
-        .header p { color: var(--dark-text-secondary); font-size: 16px; margin-top: 15px; }
-
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 25px;
-            background: var(--dark-input);
-            border-radius: 12px;
-            padding: 8px;
-        }
-        .tab {
-            flex: 1;
-            min-width: 120px;
-            padding: 12px;
-            text-align: center;
-            background: transparent;
-            border: none;
-            color: var(--dark-text-secondary);
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .tab.active {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
-            box-shadow: 0 4px 10px rgba(52,152,219,0.3);
-        }
-        .tab-content { display: none; animation: fadeIn 0.5s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-
-        /* Input & Button */
-        input, select {
-            width: 100%;
-            padding: 15px 15px 15px 45px;
-            border: 2px solid var(--dark-border);
-            border-radius: 12px;
-            background: var(--dark-input);
-            color: var(--dark-text);
-            font-size: 16px;
-        }
-        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(52,152,219,0.2); }
-        button {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 18px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(52,152,219,0.3);
-        }
-        button:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(52,152,219,0.4); }
-        button.secondary { background: linear-gradient(135deg, #475569, #64748b); }
-
-        /* แท็บคำนวณกระท่อม */
-        .kratom-section {
-            background: #1a1a1a;
-            border-radius: 16px;
-            padding: 25px;
-            margin: -20px -30px;
-            color: #e0e0e0;
-        }
-        .kratom-header {
-            background: linear-gradient(135deg, var(--kratom-primary), var(--kratom-primary-dark));
-            color: white;
-            padding: 25px;
-            text-align: center;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            position: relative;
-        }
-        .kratom-theme-toggle {
-            position: absolute;
-            top: 15px; right: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none; color: white;
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            font-size: 1.4rem;
-            cursor: pointer;
-        }
-        .kratom-result-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .kratom-card {
-            background: #252525;
-            padding: 25px;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-        .kratom-bottle-count {
-            font-size: 2.6rem;
-            font-weight: 800;
-            color: var(--kratom-green);
-        }
-        .kratom-info-box {
-            background: rgba(102,187,106,0.15);
-            border-left: 5px solid var(--kratom-green);
-            padding: 18px;
-            border-radius: 0 12px 12px 0;
-            margin: 25px 0;
-        }
-        .percent-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 18px;
-            margin: 25px 0;
-        }
-        .percent-item {
-            background: #252525;
-            padding: 18px;
-            border-radius: 14px;
-            border: 2px solid #333;
-        }
-        .btn-kratom {
-            background: linear-gradient(to right, var(--kratom-primary), #4caf50);
-            color: white;
-            padding: 16px 24px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: var(--dark-text-secondary);
-            font-size: 14px;
-        }
-
-        @media (max-width: 600px) {
-            .tabs { flex-direction: column; }
-            .kratom-result-grid, .percent-grid { grid-template-columns: 1fr; }
-        }
+        :root { --p: #2e7d32; --p-light: #e8f5e9; --avail: #4caf50; --res: #ff9800; --occ: #f44336; }
+        body { font-family: 'Kanit', sans-serif; background: #f4f7f4; margin: 0; color: #333; }
+        .header { background: linear-gradient(135deg, #1b5e20, var(--p)); color: white; padding: 25px 20px; text-align: center; border-radius: 0 0 30px 30px; }
+        .nav { display: flex; background: white; sticky: top; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; border-bottom: 3px solid transparent; font-weight: 500; }
+        .tab.active { color: var(--p); border-bottom-color: var(--p); background: var(--p-light); }
+        .content { padding: 20px; max-width: 600px; margin: auto; }
+        
+        /* Grid & Table Cards */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
+        .t-card { background: white; border-radius: 15px; padding: 15px; text-align: center; border: 2px solid #eee; transition: 0.2s; cursor: pointer; }
+        .t-card.selected { border-color: #000; transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .t-card.reserved { background: #fff8e1; border-color: var(--res); color: var(--res); cursor: not-allowed; }
+        .t-card.occupied { background: #ffebee; border-color: var(--occ); color: var(--occ); cursor: not-allowed; }
+        .t-card b { font-size: 1.4rem; display: block; }
+        
+        /* Login Screen */
+        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-top: 50px; }
+        
+        /* Form & Admin */
+        .form-box { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-family: 'Kanit'; box-sizing: border-box; }
+        button.btn-main { background: var(--p); color: white; border: none; font-weight: 600; cursor: pointer; }
+        .admin-card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--p); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .btn-group { display: flex; flex-direction: column; gap: 5px; }
+        .btn-sm { width: auto; padding: 6px 12px; font-size: 0.8rem; margin: 0; border: none; color: white; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="calculator">
-        <div class="header">
-            <h1>SSKratom-YMT • ส.สามสี</h1>
-            <p>เครื่องมือคำนวณครบวงจรสำหรับผู้ประกอบการกระท่อม</p>
-        </div>
+<div class="header">
+    <h1 style="margin:0; font-size:1.8rem;">บ้านไร่ริมเขื่อน</h1>
+    <p style="margin:5px 0 0; opacity:0.9; font-weight:300;">ระบบจัดการจองโต๊ะ</p>
+</div>
 
-        <div class="tabs">
-            <button class="tab active" data-tab="water-calculator">แปลงปริมาตรน้ำ</button>
-            <button class="tab" data-tab="general-calculator">เครื่องคิดเลข</button>
-            <button class="tab" data-tab="volume-calculator">ผลรวมปริมาตร</button>
-            <button class="tab" data-tab="kratom-calculator">แบ่งขวดกระท่อม</button>
-        </div>
+<div class="nav">
+    <div class="tab active" onclick="showTab('booking')"><i class="fas fa-chair"></i> จองโต๊ะ</div>
+    <div class="tab" onclick="showTab('admin')"><i class="fas fa-lock"></i> หลังบ้าน</div>
+</div>
 
-        <!-- 1. แปลงปริมาตรน้ำ -->
-        <div class="tab-content active" id="water-calculator">
-            <div class="info-box" style="background:#1e3a8a;padding:20px;border-radius:12px;margin-bottom:25px;">
-                <p>น้ำ 1,000 มล. = 40 บาท • กรอกเพียงช่องใดช่องหนึ่ง</p>
-            </div>
-            <div style="display:grid;gap:20px;">
-                <div>
-                    <label>จำนวนขวด 1,000 มล.</label>
-                    <input type="number" id="bottles1000" placeholder="เช่น 50">
-                </div>
-                <div>
-                    <label>จำนวนขวด 800 มล.</label>
-                    <input type="number" id="bottles800" placeholder="เช่น 62.5">
-                </div>
-            </div>
-            <div style="display:flex;gap:15px;margin-top:20px;">
-                <button onclick="calculateWater()">คำนวณ</button>
-                <button class="secondary" onclick="clearWaterInputs()">ล้าง</button>
-            </div>
-            <div id="water-result" class="result" style="margin-top:30px;display:none;background:#252525;padding:25px;border-radius:15px;">
-                <h3>ผลการคำนวณ</h3>
-                <div id="water-resultText" style="font-size:24px;color:#10b981;margin:15px 0;"></div>
-                <div id="water-details"></div>
-            </div>
-        </div>
-
-        <!-- 2. เครื่องคิดเลขทั่วไป -->
-        <div class="tab-content" id="general-calculator">
-            <div class="calculator-display" id="calc-display" style="text-align:right;padding:20px;font-size:24px;background:#0f172a;border-radius:12px;margin-bottom:20px;">
-                <div id="calc-expression">0</div>
-                <div id="calc-result"></div>
-            </div>
-            <div class="calculator-buttons" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
-                <button class="calc-btn" style="background:#e74c3c;color:white;" onclick="clearCalculator()">C</button>
-                <button class="calc-btn" style="background:#e74c3c;color:white;" onclick="clearEntry()">CE</button>
-                <button class="calc-btn operator" onclick="appendToDisplay('%')">%</button>
-                <button class="calc-btn operator" onclick="appendToDisplay('/')">/</button>
-                <button class="calc-btn" onclick="appendToDisplay('7')">7</button>
-                <button class="calc-btn" onclick="appendToDisplay('8')">8</button>
-                <button class="calc-btn" onclick="appendToDisplay('9')">9</button>
-                <button class="calc-btn operator" onclick="appendToDisplay('*')">×</button>
-                <button class="calc-btn" onclick="appendToDisplay('4')">4</button>
-                <button class="calc-btn" onclick="appendToDisplay('5')">5</button>
-                <button class="calc-btn" onclick="appendToDisplay('6')">6</button>
-                <button class="calc-btn operator" onclick="appendToDisplay('-')">-</button>
-                <button class="calc-btn" onclick="appendToDisplay('1')">1</button>
-                <button class="calc-btn" onclick="appendToDisplay('2')">2</button>
-                <button class="calc-btn" onclick="appendToDisplay('3')">3</button>
-                <button class="calc-btn operator" onclick="appendToDisplay('+')">+</button>
-                <button class="calc-btn" onclick="appendToDisplay('0')">0</button>
-                <button class="calc-btn" onclick="appendToDisplay('.')">.</button>
-                <button class="calc-btn" style="background:#27ae60;color:white;" onclick="calculateExpression()">=</button>
-            </div>
-        </div>
-
-        <!-- 3. ผลรวมปริมาตร -->
-        <div class="tab-content" id="volume-calculator">
-            <div style="display:grid;gap:20px;">
-                <div style="background:#252525;padding:20px;border-radius:12px;">
-                    <label>ขวด 800 มล.</label>
-                    <input type="number" id="bottle800" value="0" min="0" oninput="calculateTotalVolume()">
-                </div>
-                <div style="background:#252525;padding:20px;border-radius:12px;">
-                    <label>ขวด 1,000 มล.</label>
-                    <input type="number" id="bottle1000" value="0" min="0" oninput="calculateTotalVolume()">
-                </div>
-                <div style="background:#252525;padding:20px;border-radius:12px;">
-                    <label>ขวด 1,500 มล.</label>
-                    <input type="number" id="bottle1500" value="0" min="0" oninput="calculateTotalVolume()">
-                </div>
-            </div>
-            <div style="background:#252525;padding:25px;border-radius:15px;margin-top:25px;text-align:center;">
-                <div style="font-size:32px;color:#10b981;" id="totalVolume">0.00</div>
-                <div style="color:#94a3b8;">ลิตร</div>
-                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:20px;">
-                    <div style="background:#0f172a;padding:15px;border-radius:10px;">
-                        <div style="font-size:20px;color:var(--primary);" id="total800">0</div>
-                        <div style="font-size:14px;color:#94a3b8;">ขวด 800 มล.</div>
-                    </div>
-                    <div style="background:#0f172a;padding:15px;border-radius:10px;">
-                        <div style="font-size:20px;color:var(--primary);" id="total1000">0</div>
-                        <div style="font-size:14px;color:#94a3b8;">ขวด 1,000 มล.</div>
-                    </div>
-                    <div style="background:#0f172a;padding:15px;border-radius:10px;">
-                        <div style="font-size:20px;color:var(--primary);" id="total1500">0</div>
-                        <div style="font-size:14px;color:#94a3b8;">ขวด 1,500 มล.</div>
-                    </div>
-                    <div style="background:#0f172a;padding:15px;border-radius:10px;">
-                        <div style="font-size:20px;color:var(--primary);" id="totalBottles">0</div>
-                        <div style="font-size:14px;color:#94a3b8;">รวมทั้งหมด</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. คำนวณน้ำกระท่อม (เวอร์ชันเต็ม) -->
-        <div class="tab-content" id="kratom-calculator">
-            <div class="kratom-section">
-                <div class="kratom-header">
-                    <h2>เครื่องมือคำนวณน้ำกระท่อม</h2>
-                    <p style="opacity:0.95;margin-top:8px;">ตั้งค่าสัดส่วนขวดได้ • แม่นยำสูงสุด • เหลือน้ำน้อยที่สุด</p>
-                    <button class="kratom-theme-toggle" id="kratomThemeToggle">Moon</button>
-                </div>
-
-                <div style="margin-bottom:20px;">
-                    <label style="color:var(--kratom-green);font-weight:600;">ปริมาณน้ำกระท่อมดิบ (ลิตร)</label>
-                    <input type="number" id="kratomWaterAmount" value="" step="0.1" min="0">
-                </div>
-
-                <button class="btn-kratom" id="kratomCalcBtn">เริ่มคำนวณทันที</button>
-
-                <div id="kratomResults" style="display:none;margin-top:30px;">
-                    <h3 style="text-align:center;color:var(--kratom-green);margin-bottom:20px;">ผลลัพธ์ที่ดีที่สุด</h3>
-                    <div class="kratom-result-grid">
-                        <div class="kratom-card">
-                            <div style="font-size:1rem;color:var(--kratom-green);">Bottle</div>
-                            <div style="font-weight:600;">ขวด 800 มล.</div>
-                            <div class="kratom-bottle-count" id="res800">0</div>
-                            <div>ขวด</div>
-                        </div>
-                        <div class="kratom-card">
-                            <div style="font-size:1rem;color:var(--kratom-green);">Bottle</div>
-                            <div style="font-weight:600;">ขวด 1000 มล.</div>
-                            <div class="kratom-bottle-count" id="res1000">0</div>
-                            <div>ขวด</div>
-                        </div>
-                        <div class="kratom-card">
-                            <div style="font-size:1rem;color:var(--kratom-green);">Bottle</div>
-                            <div style="font-weight:600;">ขวด 1500 มล.</div>
-                            <div class="kratom-bottle-count" id="res1500">0</div>
-                            <div>ขวด</div>
-                        </div>
-                    </div>
-
-                    <div class="kratom-info-box">
-                        <p><strong>น้ำทั้งหมด:</strong> <span id="totalLiters">0</span> ลิตร</p>
-                        <p><strong>ใช้ไปจริง:</strong> <span id="usedLiters">0</span> ลิตร (เหลือ <span id="remainLiters">0</span> ลิตร)</p>
-                        <p><strong>จำนวนขวดทั้งหมด:</strong> <span id="totalBottles">0</span> ขวด</p>
-                        <p><strong>ประสิทธิภาพ:</strong> <span id="efficiency">0</span>%</p>
-                    </div>
-                </div>
-
-                <div style="margin-top:40px;">
-                    <h3 style="color:var(--kratom-green);">ตั้งค่าสัดส่วนการใช้ขวด (%)</h3>
-                    <div class="percent-grid">
-                        <div class="percent-item">
-                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                                <span>ขวด 800 มล.</span>
-                            </div>
-                            <div style="display:flex;gap:10px;">
-                                <input type="number" id="pct800" min="0" max="100" value="80">
-                                <span>%</span>
-                            </div>
-                        </div>
-                        <div class="percent-item">
-                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                                <span>ขวด 1000 มล.</span>
-                            </div>
-                            <div style="display:flex;gap:10px;">
-                                <input type="number" id="pct1000" min="0" max="100" value="20">
-                                <span>%</span>
-                            </div>
-                        </div>
-                        <div class="percent-item">
-                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                                <span>ขวด 1500 มล.</span>
-                            </div>
-                            <div style="display:flex;gap:10px;">
-                                <input type="number" id="pct1500" min="0" max="100" value="0">
-                                <span>%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top:20px;">
-                        <label style="color:var(--kratom-green);">น้ำเหลือสูงสุดที่ยอมรับได้ (ลิตร)</label>
-                        <input type="number" id="maxRemain" value="0.7" step="0.1" min="0">
-                    </div>
-
-                    <button class="btn-kratom" id="saveKratomSettings" style="margin-top:15px;">บันทึกการตั้งค่า</button>
-                </div>
-            </div>
-        </div>
+<div id="booking" class="content">
+    <div style="background:white; padding:15px; border-radius:15px; margin-bottom:20px;">
+        <label>📅 เลือกวันที่:</label>
+        <input type="date" id="targetDate" onchange="fetchData()">
     </div>
 
-    <div class="footer">
-        <p>© 2025 SSKratom-YMT | พัฒนาระบบด้วย ❤️ | ส.สามสี </p>
+    <h4 style="color:var(--p)"><i class="fas fa-water"></i> โซนริมเขื่อน (V1-V9)</h4>
+    <div class="grid" id="viewZone"></div>
+
+    <h4 style="color:#5d4037"><i class="fas fa-store"></i> โซนทั่วไป (G1-G6)</h4>
+    <div class="grid" id="genZone"></div>
+
+    <div class="form-box">
+        <h3 id="tableTitle" style="margin-top:0">กรุณาเลือกโต๊ะ...</h3>
+        <form id="bookingForm" onsubmit="handleFormSubmit(event)">
+            <input type="text" id="n" placeholder="ชื่อผู้จอง" required>
+            <input type="tel" id="ph" placeholder="เบอร์โทรศัพท์" required>
+            <div style="display:flex; gap:10px;">
+                <input type="time" id="tm" value="17:00" required>
+                <select id="p">
+                    <option>1-2 ท่าน</option><option>3-4 ท่าน</option>
+                    <option>5-8 ท่าน</option><option>10+ ท่าน</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-main">ยืนยันการจอง</button>
+        </form>
+    </div>
+</div>
+
+<div id="admin" class="content" style="display:none">
+    <div id="loginArea" class="login-box">
+        <h3><i class="fas fa-user-shield"></i> สำหรับพนักงาน</h3>
+        <p>กรุณาใส่รหัสผ่านเพื่อเข้าใช้งาน</p>
+        <input type="password" id="staffPass" placeholder="รหัสผ่าน">
+        <button onclick="checkLogin()" class="btn-main">เข้าสู่ระบบ</button>
+        <p id="loginError" style="color:red; display:none;">รหัสผ่านไม่ถูกต้อง!</p>
+    </div>
+
+    <div id="adminArea" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 id="adminDateLabel">รายการจอง</h3>
+            <button onclick="logout()" style="width:auto; padding:5px 10px; background:#666; border:none; color:white; border-radius:5px;">ออกจากระบบ</button>
+        </div>
+        <div id="adminList"></div>
     </div>
 </div>
 
 <script>
-    // ระบบแท็บ
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById(tab.dataset.tab).classList.add('active');
+    const WEB_HOOK = "https://script.google.com/macros/s/AKfycbwGyKDlaSGMBsjAT5MyAqfHe3Bnmhy7dJuryF9B7n9zIK8aeSkoDi4Y-TS4qbXn7yBkkQ/exec";
+    const STAFF_PASSWORD = "Tiggerss"; // รหัสผ่านที่คุณกำหนด
+    
+    let selectedTable = null;
+    let bookings = [];
+    let isLoggedIn = false;
+
+    document.getElementById('targetDate').valueAsDate = new Date();
+    fetchData();
+
+    function showTab(t) {
+        document.getElementById('booking').style.display = t === 'booking' ? 'block' : 'none';
+        document.getElementById('admin').style.display = t === 'admin' ? 'block' : 'none';
+        document.querySelectorAll('.tab').forEach((el, i) => {
+            el.classList.toggle('active', (t === 'booking' && i === 0) || (t === 'admin' && i === 1));
         });
-    });
+        
+        // ถ้าเป็นแท็บ Admin และล็อกอินแล้ว ให้ข้ามหน้าล็อกอิน
+        if (t === 'admin' && isLoggedIn) {
+            document.getElementById('loginArea').style.display = 'none';
+            document.getElementById('adminArea').style.display = 'block';
+        }
+    }
 
-    // 1. แปลงปริมาตรน้ำ
-    function calculateWater() {
-        const b1000 = parseFloat(document.getElementById('bottles1000').value);
-        const b800 = parseFloat(document.getElementById('bottles800').value);
-        if ((!b1000 || b1000 < 0) && (!b800 || b800 < 0)) return alert('กรอกอย่างน้อย 1 ช่อง');
-        if (b1000 && b800) return alert('กรอกเพียงช่องเดียว');
-
-        let resultText = '', details = '';
-        if (b1000) {
-            const equiv800 = (b1000 * 1000 / 800).toFixed(2);
-            resultText = `${b1000} ขวด (1,000 มล.) = ${equiv800} ขวด (800 มล.)`;
-            details = `<p>ปริมาณรวม: ${(b1000*1000).toLocaleString()} มล.<br>ราคา: ${(b1000*40).toLocaleString()} บาท</p>`;
+    // ระบบตรวจสอบรหัสผ่าน
+    function checkLogin() {
+        const pass = document.getElementById('staffPass').value;
+        if (pass === STAFF_PASSWORD) {
+            isLoggedIn = true;
+            document.getElementById('loginArea').style.display = 'none';
+            document.getElementById('adminArea').style.display = 'block';
+            render(); // อัปเดตรายการจอง
         } else {
-            const equiv1000 = (b800 * 800 / 1000).toFixed(2);
-            resultText = `${b800} ขวด (800 มล.) = ${equiv1000} ขวด (1,000 มล.)`;
-            details = `<p>ปริมาณรวม: ${(b800*800).toLocaleString()} มล.</p>`;
+            document.getElementById('loginError').style.display = 'block';
+            document.getElementById('staffPass').value = '';
         }
-        document.getElementById('water-resultText').innerHTML = resultText;
-        document.getElementById('water-details').innerHTML = details;
-        document.getElementById('water-result').style.display = 'block';
-    }
-    function clearWaterInputs() {
-        document.getElementById('bottles1000').value = '';
-        document.getElementById('bottles800').value = '';
-        document.getElementById('water-result').style.display = 'none';
     }
 
-    // 2. เครื่องคิดเลข
-    let currentExpression = '0';
-    let currentResult = '';
-    function appendToDisplay(val) {
-        if (currentExpression === '0') currentExpression = val;
-        else currentExpression += val;
-        document.getElementById('calc-expression').textContent = currentExpression;
+    function logout() {
+        isLoggedIn = false;
+        document.getElementById('staffPass').value = '';
+        document.getElementById('loginArea').style.display = 'block';
+        document.getElementById('adminArea').style.display = 'none';
+        document.getElementById('loginError').style.display = 'none';
     }
-    function clearCalculator() { currentExpression = '0'; currentResult = ''; updateCalcDisplay(); }
-    function clearEntry() { currentExpression = currentExpression.slice(0, -1) || '0'; updateCalcDisplay(); }
-    function calculateExpression() {
+
+    async function fetchData() {
+        const date = document.getElementById('targetDate').value;
         try {
-            const result = eval(currentExpression.replace('×', '*'));
-            currentResult = Number.isInteger(result) ? result : result.toFixed(6).replace(/\.?0+$/, '');
-            document.getElementById('calc-result').textContent = '= ' + currentResult;
-        } catch { document.getElementById('calc-result').textContent = 'Error'; }
-    }
-    function updateCalcDisplay() {
-        document.getElementById('calc-expression').textContent = currentExpression;
-        document.getElementById('calc-result').textContent = currentResult;
+            const res = await fetch(`${WEB_HOOK}?action=get_data&date=${date}&_t=${Date.now()}`);
+            bookings = await res.json();
+            render();
+        } catch (err) { console.error("Error fetching data"); }
     }
 
-    // 3. ผลรวมปริมาตร
-    function calculateTotalVolume() {
-        const v800 = parseInt(document.getElementById('bottle800').value) || 0;
-        const v1000 = parseInt(document.getElementById('bottle1000').value) || 0;
-        const v1500 = parseInt(document.getElementById('bottle1500').value) || 0;
-        const total = (v800 * 0.8) + v1000 + (v1500 * 1.5);
-        document.getElementById('totalVolume').textContent = total.toFixed(2);
-        document.getElementById('total800').textContent = v800;
-        document.getElementById('total1000').textContent = v1000;
-        document.getElementById('total1500').textContent = v1500;
-        document.getElementById('totalBottles').textContent = v800 + v1000 + v1500;
-    }
+    function render() {
+        const v = document.getElementById('viewZone'); v.innerHTML = '';
+        const g = document.getElementById('genZone'); g.innerHTML = '';
+        const list = document.getElementById('adminList'); list.innerHTML = '';
 
-    // 4. คำนวณน้ำกระท่อม
-    let kratomSettings = { pct800: 40, pct1000: 50, pct1500: 10, maxRemain: 2 };
-    if (localStorage.getItem('kratomSettings')) {
-        kratomSettings = JSON.parse(localStorage.getItem('kratomSettings'));
-        ['pct800','pct1000','pct1500','maxRemain'].forEach(id => {
-            document.getElementById(id).value = kratomSettings[id.replace('pct','').replace('maxRemain','maxRemain')];
-        });
-    }
-
-    document.getElementById('saveKratomSettings').addEventListener('click', () => {
-        ['pct800','pct1000','pct1500','maxRemain'].forEach(id => {
-            kratomSettings[id.replace('pct','').replace('maxRemain','maxRemain')] = parseFloat(document.getElementById(id).value) || 0;
-        });
-        localStorage.setItem('kratomSettings', JSON.stringify(kratomSettings));
-        alert('บันทึกการตั้งค่าสำเร็จ');
-    });
-
-    function calculateKratom() {
-        const liters = parseFloat(document.getElementById('kratomWaterAmount').value) || 0;
-        if (liters <= 0) return;
-        const totalML = liters * 1000;
-        const target800 = (kratomSettings.pct800 / 100) * totalML;
-        const target1000 = (kratomSettings.pct1000 / 100) * totalML;
-        const target1500 = (kratomSettings.pct1500 / 100) * totalML;
-
-        let best = null;
-        let bestScore = -Infinity;
-
-        for (let n1500 = 0; n1500 <= Math.ceil(totalML / 1500) + 5; n1500++) {
-            for (let n1000 = 0; n1000 <= Math.ceil(totalML / 1000) + 10; n1000++) {
-                const remainAfterBig = totalML - (n1500 * 1500 + n1000 * 1000);
-                if (remainAfterBig < 0) continue;
-                const n800 = Math.round(remainAfterBig / 800);
-                const used = n800 * 800 + n1000 * 1000 + n1500 * 1500;
-                const remain = totalML - used;
-                if (remain > kratomSettings.maxRemain * 1000 || remain < -100) continue;
-
-                const score = 
-                    (target800 ? -Math.abs(n800*800 - target800)/target800 : (n800===0?0:-1000)) +
-                    (target1000 ? -Math.abs(n1000*1000 - target1000)/target1000 : (n1000===0?0:-1000)) +
-                    (target1500 ? -Math.abs(n1500*1500 - target1500)/target1500 : (n1500===0?0:-1000)) +
-                    (used / totalML) * 100 - Math.abs(remain);
-
-                if (score > bestScore) {
-                    bestScore = score;
-                    best = { n800, n1000, n1500, used, remain };
-                }
+        for (let i = 1; i <= 15; i++) {
+            const no = i <= 9 ? 'V' + i : 'G' + (i - 9);
+            const b = bookings.find(x => x.table === no);
+            const status = b ? b.status : 'available';
+            
+            const card = document.createElement('div');
+            card.className = `t-card ${status} ${selectedTable === no ? 'selected' : ''}`;
+            card.innerHTML = `<b>${no}</b><span>${status === 'available' ? 'ว่าง' : (status === 'reserved' ? 'จองแล้ว' : 'มีลูกค้า')}</span>`;
+            
+            if (status === 'available') {
+                card.onclick = () => {
+                    selectedTable = no;
+                    document.getElementById('tableTitle').innerHTML = `โต๊ะที่เลือก: <span style="color:var(--p)">${no}</span>`;
+                    render();
+                };
             }
+            if (i <= 9) v.appendChild(card); else g.appendChild(card);
         }
 
-        if (best) {
-            document.getElementById('res800').textContent = best.n800;
-            document.getElementById('res1000').textContent = best.n1000;
-            document.getElementById('res1500').textContent = best.n1500;
-            document.getElementById('totalLiters').textContent = liters.toFixed(1);
-            document.getElementById('usedLiters').textContent = (best.used / 1000).toFixed(2);
-            document.getElementById('remainLiters').textContent = (best.remain / 1000).toFixed(2);
-            document.getElementById('totalBottles').textContent = best.n800 + best.n1000 + best.n1500;
-            document.getElementById('efficiency').textContent = ((best.used / totalML) * 100).toFixed(1);
-            document.getElementById('kratomResults').style.display = 'block';
+        if (bookings.length === 0) {
+            list.innerHTML = '<p style="text-align:center; padding:20px; color:#999;">ไม่มีข้อมูลการจอง</p>';
+        } else {
+            bookings.forEach(b => {
+                const div = document.createElement('div');
+                div.className = 'admin-card';
+                div.style.backgroundColor = b.status === 'occupied' ? '#fff5f5' : 'white';
+                div.innerHTML = `
+                    <div style="flex:1">
+                        <strong>โต๊ะ ${b.table} - ${b.name}</strong><br>
+                        <small>${b.time} | ${b.phone}</small>
+                    </div>
+                    <div class="btn-group">
+                        ${b.status === 'reserved' ? 
+                            `<button onclick="updateStatus('${b.table}','occupied')" class="btn-sm" style="background:var(--p)">Check-in</button>` : 
+                            `<button onclick="updateStatus('${b.table}','available')" class="btn-sm" style="background:#1976d2">ล้างโต๊ะ</button>`
+                        }
+                        <button onclick="confirmCancel('${b.table}')" class="btn-sm" style="background:#777">ยกเลิก</button>
+                    </div>`;
+                list.appendChild(div);
+            });
         }
     }
 
-    document.getElementById('kratomCalcBtn').addEventListener('click', calculateKratom);
-    document.getElementById('kratomWaterAmount').addEventListener('input', () => setTimeout(calculateKratom, 500));
-    setTimeout(calculateKratom, 500);
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        if (!selectedTable) return Swal.fire('โปรดเลือกโต๊ะ', '', 'warning');
+        
+        const data = {
+            action: 'save_booking',
+            name: document.getElementById('n').value,
+            phone: document.getElementById('ph').value,
+            date: document.getElementById('targetDate').value,
+            time: document.getElementById('tm').value,
+            people: document.getElementById('p').value,
+            table: selectedTable,
+            zone: selectedTable.startsWith('V') ? 'ริมเขื่อน' : 'ทั่วไป'
+        };
+
+        Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
+        await fetch(WEB_HOOK, { method: 'POST', body: JSON.stringify(data) });
+        Swal.fire('จองสำเร็จ!', '', 'success');
+        document.getElementById('bookingForm').reset();
+        selectedTable = null;
+        fetchData();
+    }
+
+    async function updateStatus(no, status) {
+        const date = document.getElementById('targetDate').value;
+        const data = { action: 'update_status', tableNo: no, status: status, date: date };
+        await fetch(WEB_HOOK, { method: 'POST', body: JSON.stringify(data) });
+        fetchData();
+    }
+
+    async function confirmCancel(tableNo) {
+        const res = await Swal.fire({
+            title: 'ยกเลิกการจอง?', icon: 'warning', showCancelButton: true, confirmButtonText: 'ลบข้อมูล'
+        });
+        if (res.isConfirmed) updateStatus(tableNo, 'available');
+    }
 </script>
 </body>
 </html>
